@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { stringify } from "querystring";
 
 export const OPENAI_URL = "api.openai.com";
 const DEFAULT_PROTOCOL = "https";
@@ -31,10 +32,12 @@ export async function requestOpenai(req: NextRequest) {
     controller.abort();
   }, 10 * 60 * 1000);
 
-  const fetchUrl = `${baseUrl}/${openaiPath}`;
+  const fetchUrl = `${baseUrl}/${openaiPath}&api-version=2023-03-15-preview`;
+  console.log("[Fetch Url]", fetchUrl);
   const fetchOptions: RequestInit = {
     headers: {
       "Content-Type": "application/json",
+      "Api-Key": authValue.split("Bearer ").at(-1) ?? "",
       Authorization: authValue,
       ...(process.env.OPENAI_ORG_ID && {
         "OpenAI-Organization": process.env.OPENAI_ORG_ID,
